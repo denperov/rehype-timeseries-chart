@@ -234,7 +234,7 @@ const toSeries = (rows, names) =>
  * }} [options]
  * @returns {(tree: import('unist').Node) => void}
  */
-export default function index(options = {}) {
+export default function rehypeTimeseriesChart(options = {}) {
   const {
     width,
     height,
