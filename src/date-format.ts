@@ -1,113 +1,75 @@
 /**
- * Detect column-0 format and supply parser/formatter metadata.
- * Supports ISO dates, time-only strings, Unix timestamps, and numeric values.
- * Runs in O(n × formats) — one pass per candidate format.
+ * Detect column-0 format and supply parser metadata.
+ * 1. Try explicit Y/M/D & time patterns               (fast regex table)
+ * 2. Fallback-1: plain integer → Number               (isDate = false)
+ * 3. Fallback-2: Date.parse() → Date                  (isDate = true)
  *
  * @module date-format
  */
 
-import {timeParse, timeFormat} from 'd3-time-format'
+import { timeParse } from 'd3-time-format';
 
 /** Parser transforms a string into Date or number */
-export type Parser = (s: string) => Date | number | null
-/** Formatter transforms a Date or number back to string */
-export type Formatter = ((d: Date) => string) | ((n: number) => string)
+export type Parser = (s: string) => Date | number | null;
 
 /** Metadata returned for a detected format */
 export interface DateInfo {
-  parser: Parser
-  formatter: Formatter
-  type: string
-  isDate: boolean
+  parser: Parser;
+  isDate: boolean;
 }
 
 interface FormatConfig {
-  type: string
-  test: RegExp | ((s: string) => boolean)
-  fmt: string | Formatter
-  parser: Parser
+  test: RegExp;
+  parser: Parser;
 }
 
-const formats: FormatConfig[] = [
-  {
-    type: 'YYYY-MM-DD',
-    test: /^\d{4}-\d{2}-\d{2}$/,
-    fmt: '%Y-%m-%d',
-    parser: timeParse('%Y-%m-%d')
-  },
-  {
-    type: 'YYYY-MM',
-    test: /^\d{4}-\d{2}$/,
-    fmt: '%Y-%m',
-    parser: timeParse('%Y-%m')
-  },
-  {type: 'YYYY', test: /^\d{4}$/, fmt: '%Y', parser: timeParse('%Y')},
-  {
-    type: 'HH:MM:SS',
-    test: /^\d{2}:\d{2}:\d{2}$/,
-    fmt: '%H:%M:%S',
-    parser: timeParse('%H:%M:%S')
-  },
-  {
-    type: 'HH:MM',
-    test: /^\d{2}:\d{2}$/,
-    fmt: '%H:%M',
-    parser: timeParse('%H:%M')
-  },
-  {type: 'HH', test: /^\d{2}$/, fmt: '%H', parser: timeParse('%H')},
-  {
-    type: 'unix-seconds',
-    test: /^\d{10}$/,
-    fmt: (d: Date) => String(Math.floor((d as Date).getTime() / 1000)),
-    parser: (s) => new Date(+s * 1000)
-  },
-  {
-    type: 'unix-ms',
-    test: /^\d{13}$/,
-    fmt: (d: Date) => String((d as Date).getTime()),
-    parser: (s) => new Date(+s)
-  },
-  {
-    type: 'unix-us',
-    test: /^\d{16}$/,
-    fmt: (d: Date) => String((d as Date).getTime() * 1000),
-    parser: (s) => new Date(+s / 1000)
-  },
-  {type: 'number', test: /^-?\d+$/, fmt: String, parser: (s) => Number(s)},
-  {
-    type: 'iso',
-    test: (s) => !isNaN(Date.parse(s)),
-    fmt: '%Y-%m-%dT%H:%M:%S.%LZ',
-    parser: (s) => new Date(s)
-  }
-]
+/* ------------------------------------------------------------------ */
+/* 1. Explicit date/time regex patterns                               */
+/* ------------------------------------------------------------------ */
 
-/**
- * Detects the first matching date/number format for given samples.
- * @param samples - Array of string samples to test
- * @returns DateInfo or null if no format matches
- */
-export function detectDateParserFormatter(
-  samples: string[] = []
-): DateInfo | null {
-  if (!samples.length) return null
+const patterns: FormatConfig[] = [
+  { test: /^\d{4}-\d{2}-\d{2}$/, parser: timeParse('%Y-%m-%d') }, // YYYY-MM-DD
+  { test: /^\d{4}-\d{2}$/, parser: timeParse('%Y-%m') }, // YYYY-MM
+  { test: /^\d{4}$/, parser: timeParse('%Y') }, // YYYY
+  { test: /^\d{2}:\d{2}:\d{2}$/, parser: timeParse('%H:%M:%S') }, // HH:MM:SS
+  { test: /^\d{2}:\d{2}$/, parser: timeParse('%H:%M') }, // HH:MM
+  { test: /^\d{2}$/, parser: timeParse('%H') }, // HH
+  { test: /^\d{10}$/, parser: (s) => new Date(+s * 1000) }, // unix-sec
+  { test: /^\d{13}$/, parser: (s) => new Date(+s) }, // unix-ms
+  { test: /^\d{16}$/, parser: (s) => new Date(+s / 1000) }, // unix-µs
+];
 
-  for (const cfg of formats) {
-    const matches = samples.every((s) =>
-      cfg.test instanceof RegExp ? cfg.test.test(s) : cfg.test(s)
-    )
-    if (!matches) continue
+/* ------------------------------------------------------------------ */
+/* Public API                                                         */
+/* ------------------------------------------------------------------ */
 
-    const formatter: Formatter =
-      typeof cfg.fmt === 'string' ? timeFormat(cfg.fmt) : cfg.fmt
+export function detectDateParser(sample: string): DateInfo | null {
+  /* explicit patterns */
+  for (const { test, parser } of patterns) {
+    if (!test.test(sample)) continue;
 
     return {
-      parser: cfg.parser,
-      formatter,
-      type: cfg.type,
-      isDate: cfg.type !== 'number'
-    }
+      parser,
+      isDate: true, // every explicit pattern yields a Date
+    };
   }
 
-  return null
+  /* Date.parse() fallback */
+  const ts = Date.parse(sample);
+  if (!isNaN(ts)) {
+    return {
+      parser: (s) => new Date(Date.parse(s)),
+      isDate: true,
+    };
+  }
+
+  /* numeric fallback */
+  if (/^-?\d+$/.test(sample)) {
+    return {
+      parser: (s) => Number(s),
+      isDate: false,
+    };
+  }
+
+  return null;
 }

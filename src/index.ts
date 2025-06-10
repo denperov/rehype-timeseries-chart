@@ -7,7 +7,7 @@
  */
 
 import { visit } from 'unist-util-visit';
-import { detectDateParserFormatter, DateInfo } from './date-format.ts';
+import { DateInfo, detectDateParser } from './date-format.ts';
 import { buildSvg } from './build-svg.js';
 import { Node as HastNode, Parent as HastParent, Element as HastElement } from 'hast';
 
@@ -125,6 +125,8 @@ export default function rehypeTimeseriesChart(options: ChartOptions = {}) {
         .map((c) => c.value)
         .join('\n');
 
+      console.debug(`rehypeTimeseriesChart: Processing CSV block:\n${raw}`);
+
       const allLines = raw.split('\n');
       if (allLines.length < 3) return; /* rows >= 3 */
 
@@ -147,7 +149,7 @@ export default function rehypeTimeseriesChart(options: ChartOptions = {}) {
       /* ---------------------------------------------------------------- */
       /* 4. Detect x-axis parser (based on second row)                    */
       /* ---------------------------------------------------------------- */
-      const detector = detectDateParserFormatter([secondRowCells[0]]);
+      const detector = detectDateParser(secondRowCells[0]);
       if (!detector) return;
 
       /* ---------------------------------------------------------------- */
@@ -163,11 +165,13 @@ export default function rehypeTimeseriesChart(options: ChartOptions = {}) {
 
         if (!isCompleteRow(cells, headerLen)) {
           /* Ignore the final streaming row if it is incomplete */
+          console.debug(`rehypeTimeseriesChart: Incomplete row at line ${i}:`, cells);
           break;
         }
 
         if (!rowMatchesFormat(cells, detector)) {
           /* First completed row that fails → abort transform to avoid flicker */
+          console.debug(`rehypeTimeseriesChart: Invalid row at line ${i}:`, cells);
           return;
         }
 
