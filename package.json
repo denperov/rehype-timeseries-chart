@@ -1,7 +1,7 @@
 {
   "author": "Denis Perov",
   "name": "rehype-timeseries-chart",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "keywords": [
     "rehype",
     "plugin",
@@ -26,6 +26,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
+    "test": "node --test",
     "publish": "npm publish"
   },
   "sideEffects": false,
@@ -54,8 +55,13 @@
     "@types/hast": "^3.0.4",
     "@types/node": "^22.15.30",
     "prettier": "^3.5.3",
+    "rehype-parse": "^9.0.1",
+    "rehype-stringify": "^10.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "unified": "^11.0.5"
   },
   "engines": {
     "node": ">=18"
