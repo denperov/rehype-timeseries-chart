@@ -1,7 +1,7 @@
 {
   "author": "Denis Perov",
   "name": "rehype-timeseries-chart",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "keywords": [
     "rehype",
     "plugin",
@@ -19,11 +19,13 @@
   "bugs": "https://github.com/denperov/rehype-timeseries-chart/issues",
   "license": "MIT",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup && type-coverage",
+    "build": "tsup",
     "publish": "npm publish"
   },
   "sideEffects": false,
@@ -49,10 +51,10 @@
     "@types/d3-scale-chromatic": "^3.1.0",
     "@types/d3-shape": "^3.1.7",
     "@types/d3-time-format": "^4.0.3",
+    "@types/hast": "^3.0.4",
     "@types/node": "^22.15.30",
     "prettier": "^3.5.3",
     "tsup": "^8.5.0",
-    "type-coverage": "^2.29.7",
     "typescript": "^5.8.3"
   },
   "engines": {
