@@ -209,6 +209,10 @@ This plugin transforms CSV data into SVG markup. The plugin does not execute arb
 * [`rehype-mermaidjs`](https://github.com/remcohaszing/rehype-mermaidjs)
   — render mermaid diagrams
 
+## LibreChat integration:
+
+![`rehype-timeseries-chart`](docs/librechat-rehype-timeseries-chart.com-optimize.gif)
+
 ## Contribute
 
 Yes, please!
