@@ -60,14 +60,10 @@
     "@rollup/rollup-darwin-x64": "^4.42.0",
     "@rollup/rollup-linux-arm64-gnu": "^4.42.0",
     "@rollup/rollup-linux-x64-gnu": "^4.42.0",
-    "@rollup/rollup-win32-arm64-msvc": "^4.42.0",
-    "@rollup/rollup-win32-x64-msvc": "^4.42.0",
     "@esbuild/linux-x64": "^0.25.5",
     "@esbuild/linux-arm64": "^0.25.5",
     "@esbuild/darwin-x64": "^0.25.5",
-    "@esbuild/darwin-arm64": "^0.25.5",
-    "@esbuild/win32-x64": "^0.25.5",
-    "@esbuild/win32-arm64": "^0.25.5"
+    "@esbuild/darwin-arm64": "^0.25.5"
   },
   "engines": {
     "node": ">=18"
