@@ -125,9 +125,8 @@ export default function rehypeTimeseriesChart(options: ChartOptions = {}) {
         .map((c) => c.value)
         .join('\n');
 
-      console.debug(`rehypeTimeseriesChart: Processing CSV block:\n${raw}`);
-
-      const allLines = raw.split('\n');
+      // remove empty lines
+      const allLines = raw.split('\n').filter((line) => line.trim() !== '');
       if (allLines.length < 3) return; /* rows >= 3 */
 
       /* ---------------------------------------------------------------- */
