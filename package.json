@@ -30,14 +30,6 @@
     "publish": "npm publish"
   },
   "sideEffects": false,
-  "prettier": {
-    "bracketSpacing": false,
-    "singleQuote": true,
-    "semi": false,
-    "tabWidth": 2,
-    "trailingComma": "none",
-    "useTabs": false
-  },
   "dependencies": {
     "d3-array": "^3.2.4",
     "d3-scale": "^4.0.2",
