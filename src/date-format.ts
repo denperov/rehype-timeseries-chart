@@ -54,20 +54,20 @@ export function detectDateParser(sample: string): DateInfo | null {
     };
   }
 
+  /* numeric fallback */
+  if (/^-?\d+$/.test(sample)) {
+    return {
+      parser: (s) => Number(s),
+      isDate: false,
+    };
+  }
+
   /* Date.parse() fallback */
   const ts = Date.parse(sample);
   if (!isNaN(ts)) {
     return {
       parser: (s) => new Date(Date.parse(s)),
       isDate: true,
-    };
-  }
-
-  /* numeric fallback */
-  if (/^-?\d+$/.test(sample)) {
-    return {
-      parser: (s) => Number(s),
-      isDate: false,
     };
   }
 
