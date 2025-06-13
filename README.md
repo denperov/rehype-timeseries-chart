@@ -16,6 +16,9 @@
   </tr>
 </table>
 
+### [**Try the Live Demo**](https://rehype-timeseries-chart-demo.denperov.workers.dev/)
+Powered by [Cloudflare Workers AI®](https://ai.cloudflare.com/)
+
 ## Contents
 
 - [What is this?](#what-is-this)
