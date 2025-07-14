@@ -64,3 +64,31 @@ test('remark → rehype: converts a fenced ```csv block in Markdown into an <svg
     'CSV code block should be gone'
   )
 })
+
+/* ------------------------------------------------------------------ */
+/* Preserve original CSV block with saveOriginal:true                */
+/* ------------------------------------------------------------------ */
+
+test('rehype: wraps output in a container div with both <svg> and <pre> when saveOriginal is true', async () => {
+  const html = `<pre><code class="language-csv">date,value
+2024-01-01,10
+2024-01-02,20
+</code></pre>`
+
+  const out = await unified()
+    .use(rehypeParse, {fragment: true})
+    .use(rehypeTimeseriesChart, {saveOriginal: true})
+    .use(rehypeStringify)
+    .process(html)
+
+  const result = String(out)
+
+  assert.match(result, /<div class="timeseries-chart-container">/, 'container div should be present')
+
+  const start = result.indexOf('<div class="timeseries-chart-container">')
+  const end = result.indexOf('</div>', start)
+  const containerContent = result.slice(start, end)
+
+  assert.match(containerContent, /<svg[^>]*>/, 'container should include <svg>')
+  assert.match(containerContent, /<pre>/, 'container should include <pre>')
+})
