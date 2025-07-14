@@ -1,7 +1,7 @@
 /**
  * Rehype plugin to transform fenced CSV code blocks into SVG charts.
  *
- * By default, this plugin preserves the original <pre><code> block alongside the generated chart.
+ * The original <pre><code> block is removed unless `saveOriginal` is enabled.
  *
  * @module rehypeTimeseriesChart
  */
