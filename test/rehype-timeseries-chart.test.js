@@ -29,6 +29,11 @@ test('rehype: converts an HTML <code class="language-csv"> block into an <svg>',
   const result = String(out)
 
   // The plugin should have replaced the <code> block with an inline SVG chart
+  assert.match(
+    result,
+    /<div class="timeseries-chart-container">/,
+    'wrapper div should be present'
+  )
   assert.match(result, /<svg[^>]*>/, 'output should contain an <svg>')
   assert.doesNotMatch(
     result,
@@ -58,6 +63,11 @@ test('remark → rehype: converts a fenced ```csv block in Markdown into an <svg
   const result = String(out)
 
   assert.match(result, /<svg[^>]*>/, 'output should contain an <svg>')
+  assert.match(
+    result,
+    /<div class="timeseries-chart-container">/,
+    'wrapper div should be present'
+  )
   assert.doesNotMatch(
     result,
     /<code[^>]*language-csv/,
