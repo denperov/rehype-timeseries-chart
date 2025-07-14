@@ -1,40 +1,27 @@
-name: Node.js Package
+name: Release
 
 on:
-  # 1) Run on every push to main (build only)
   push:
     branches:
       - main
 
-  # 2) Also run on new releases (build and publish)
-  release:
-    types: [created]
-
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
-
-  publish-npm:
-    # only run when triggered by a release
-    if: github.event_name == 'release'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
-      - run: npm publish
+      - run: npm test
+      - uses: changesets/action@v1
+        with:
+          publish: npm run release
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
