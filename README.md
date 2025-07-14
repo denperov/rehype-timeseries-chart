@@ -222,7 +222,7 @@ Yes, please!
 
 ## License
 
-[MIT](LICENSE) © [Denis Perov](https://github.com/your-username)
+[MIT](LICENSE) © [Denis Perov](https://github.com/denperov)
 
 <!-- Definitions -->
 
