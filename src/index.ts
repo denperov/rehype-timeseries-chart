@@ -1,7 +1,8 @@
 /**
  * Rehype plugin to transform fenced CSV code blocks into SVG charts.
  *
- * By default, this plugin preserves the original <pre><code> block alongside the generated chart.
+ * By default, this plugin removes the original <pre><code> block.
+ * Pass `saveOriginal: true` to keep it alongside the generated chart.
  *
  * @module rehypeTimeseriesChart
  */
@@ -198,17 +199,13 @@ export default function rehypeTimeseriesChart(options: ChartOptions = {}) {
       /* ---------------------------------------------------------------- */
       /* 8. Replace or wrap original node                                 */
       /* ---------------------------------------------------------------- */
-      if (saveOriginal) {
-        const container: HastElement = {
-          type: 'element',
-          tagName: 'div',
-          properties: { className: [containerClass] },
-          children: [svgNode, node],
-        };
-        parent.children.splice(idx, 1, container);
-      } else {
-        parent.children.splice(idx, 1, svgNode);
-      }
+      const container: HastElement = {
+        type: 'element',
+        tagName: 'div',
+        properties: { className: [containerClass] },
+        children: saveOriginal ? [svgNode, node] : [svgNode],
+      };
+      parent.children.splice(idx, 1, container);
     });
   };
 }
